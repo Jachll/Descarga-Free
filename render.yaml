@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: descarga-free
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "60000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "25"
+      - key: DOWNLOAD_TIMEOUT_MS
+        value: "900000"
+      - key: MAX_CONTENT_SECONDS
+        value: "14400"

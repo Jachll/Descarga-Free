@@ -1,162 +1,163 @@
-# Descargador Multimedia Local (Next.js)
+# Descarga Free
 
-Aplicación web local para analizar URLs de contenido multimedia público, detectar opciones reales de formato/calidad y descargar archivos al navegador.
+Aplicacion web para analizar URLs de contenido multimedia publico, detectar formatos reales y descargar video MP4 o audio MP3 desde una interfaz moderna construida con Next.js.
 
-## Aviso importante
+## Resumen
 
-Este proyecto **no evade DRM**, no rompe autenticaciones privadas, ni bypass de paywalls. Está diseñado para trabajar con contenido públicamente accesible y bajo uso legal permitido.
+Descarga Free esta pensada para ejecutarse localmente o desplegarse como servicio web con backend Node.js. La app valida URLs, consulta metadatos con `yt-dlp`, muestra resoluciones reales, permite descargar en MP4 o convertir a MP3 y expone progreso y errores de forma clara.
+
+## Caracteristicas
+
+- Interfaz responsive con Next.js, React y Tailwind CSS.
+- Analisis de metadatos: titulo, miniatura, duracion, fuente y formatos detectados.
+- Descarga en `Video MP4` y `Audio MP3`.
+- Seleccion de resolucion basada en opciones reales detectadas.
+- Progreso de descarga y estados de error legibles.
+- Limpieza automatica de archivos temporales.
+- Protecciones basicas: validacion estricta de URL, rate limiting y limites de tiempo.
+- Soporte opcional para cookies en redes sociales cuando se usa una instancia privada.
 
 ## Stack
 
-- Next.js (App Router) + React + TypeScript
+- Next.js 16
+- React 19
+- TypeScript
 - Tailwind CSS
-- API Routes (Node.js)
-- `yt-dlp` + `ffmpeg` instalados localmente
+- `yt-dlp`
+- `ffmpeg` / `ffprobe`
 
-## Funcionalidades incluidas
+## Estructura
 
-- Campo de URL + validación estricta (`http/https`, sin hosts locales/privados)
-- Análisis de metadatos:
-  - título
-  - miniatura
-  - duración
-  - extractor/fuente
-  - formatos reales detectados
-  - resoluciones reales detectadas
-- Descarga en modos:
-  - video mp4
-  - audio mp3 (conversión)
-- Selección de calidad:
-  - mejor disponible
-  - 1080p / 720p / 480p / 360p (solo si existen realmente)
-- Barra de progreso y estado por trabajo de descarga
-- Manejo robusto de errores
-- Rate limiting básico por IP
-- Carpeta temporal del sistema (`os.tmpdir`) con limpieza automática tras descarga o timeout
+- [app/page.tsx](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\page.tsx): pantalla principal.
+- [components/downloader-card.tsx](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\components\downloader-card.tsx): flujo de analisis, seleccion y descarga.
+- [app/api/analyze/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\analyze\route.ts): analiza la URL y obtiene metadatos.
+- [app/api/download/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\download\route.ts): crea el trabajo de descarga.
+- [app/api/progress/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\progress\route.ts): expone el estado del trabajo.
+- [app/api/file/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\file\route.ts): entrega el archivo final.
+- [app/api/health/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\health\route.ts): healthcheck para hosting.
+- [lib/yt-dlp.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\lib\yt-dlp.ts): integracion central con `yt-dlp`, `ffmpeg` y `ffprobe`.
 
-## Arquitectura breve
+## Requisitos
 
-- `app/page.tsx`: vista principal
-- `components/downloader-card.tsx`: UI + flujo cliente (análisis, polling de progreso, descarga en navegador)
-- `app/api/analyze/route.ts`: valida URL y obtiene metadatos con `yt-dlp -J`
-- `app/api/download/route.ts`: inicia trabajo de descarga asíncrono
-- `app/api/progress/route.ts`: consulta estado/progreso de trabajo
-- `app/api/file/route.ts`: entrega archivo final al navegador
-- `lib/yt-dlp.ts`: integración central con `yt-dlp` y `ffmpeg`
-- `lib/job-store.ts`: estado en memoria + limpieza de temporales
-- `lib/validation.ts`: validación de inputs
-- `lib/rate-limit.ts`: límite básico de solicitudes
+- Node.js 20 o superior
+- npm 10 o superior
+- `yt-dlp` accesible desde PATH o por variable de entorno
+- `ffmpeg` y `ffprobe` accesibles desde PATH o por variable de entorno
 
-## Requisitos previos
+Comprueba instalacion:
 
-1. Node.js 20+
-2. npm 10+
-3. `yt-dlp` en PATH (o configurar `YT_DLP_BIN`)
-4. `ffmpeg` en PATH (o configurar `FFMPEG_BIN`)
-
-### Verificar dependencias externas
-
-```bash
+```powershell
 yt-dlp --version
 ffmpeg -version
+ffprobe -version
 node -v
 npm -v
 ```
 
-## Instalación
+## Desarrollo local
 
-```bash
+1. Instala dependencias:
+
+```powershell
 npm install
 ```
 
-## Variables de entorno
+2. Crea variables locales:
 
-1. Copiar ejemplo:
-
-```bash
-cp .env.example .env.local
+```powershell
+Copy-Item .env.example .env.local
 ```
 
-2. Ajustar si hace falta:
+3. Inicia en desarrollo:
 
-- `YT_DLP_BIN` (por defecto: `yt-dlp`)
-- `FFMPEG_BIN` (opcional, ruta completa a `ffmpeg.exe`; si está en PATH, déjalo vacío)
-- `FFPROBE_BIN` (opcional, ruta completa a `ffprobe.exe`; si está en PATH, déjalo vacío)
-- `SOCIAL_COOKIES_FROM_BROWSER` (opcional para Facebook/Instagram: `chrome`, `edge`, `firefox`)
-- `SOCIAL_COOKIES_PROFILE` (opcional, por ejemplo `Default`)
-- `SOCIAL_COOKIES_FILE` (opcional, ruta a `cookies.txt`; tiene prioridad sobre browser)
-- `SOCIAL_USER_AGENT` (opcional para sitios sensibles a fingerprint)
-- `RATE_LIMIT_WINDOW_MS`
-- `RATE_LIMIT_MAX_REQUESTS`
-- `DOWNLOAD_TIMEOUT_MS`
-- `MAX_CONTENT_SECONDS`
-
-## Ejecución en desarrollo
-
-```bash
+```powershell
 npm run dev
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000).
+4. Abre:
 
-## Ejecución en producción local
+[http://localhost:3000](http://localhost:3000)
 
-```bash
+## Variables de entorno
+
+Variables principales:
+
+- `YT_DLP_BIN`: comando o ruta de `yt-dlp`.
+- `FFMPEG_BIN`: ruta completa a `ffmpeg.exe` si no esta en PATH. Si ya esta en PATH, dejalo vacio.
+- `FFPROBE_BIN`: ruta completa a `ffprobe.exe` si no esta en PATH. Si ya esta en PATH, dejalo vacio.
+- `RATE_LIMIT_WINDOW_MS`: ventana del rate limit.
+- `RATE_LIMIT_MAX_REQUESTS`: maximo de solicitudes por ventana.
+- `DOWNLOAD_TIMEOUT_MS`: timeout maximo de procesamiento.
+- `MAX_CONTENT_SECONDS`: duracion maxima permitida.
+
+Variables opcionales para redes sociales en uso privado:
+
+- `SOCIAL_COOKIES_FILE`
+- `SOCIAL_COOKIES_FROM_BROWSER`
+- `SOCIAL_COOKIES_PROFILE`
+- `SOCIAL_USER_AGENT`
+
+Importante:
+
+- No subas `cookies.txt` ni cookies privadas a GitHub.
+- En un despliegue publico no se recomienda usar cookies personales del navegador.
+
+## Despliegue publico
+
+La app ya quedo preparada para desplegarse con Docker en Render:
+
+- [Dockerfile](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\Dockerfile)
+- [render.yaml](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\render.yaml)
+
+### Opcion recomendada: Render
+
+1. Entra a [Render](https://render.com/).
+2. Crea un nuevo `Web Service`.
+3. Conecta el repositorio:
+   [https://github.com/Jachll/Descarga-Free](https://github.com/Jachll/Descarga-Free)
+4. Render detectara el `Dockerfile`.
+5. Despliega usando el `render.yaml`.
+
+Healthcheck:
+
+- `GET /api/health`
+
+Notas para produccion:
+
+- Deja vacias las variables de cookies si el servicio sera publico.
+- Asegurate de revisar consumo y limites del hosting, porque `yt-dlp` y `ffmpeg` usan CPU y disco temporal.
+
+## Seguridad y limites
+
+- Solo se aceptan URLs `http/https`.
+- Se bloquean hosts locales o privados para reducir riesgo de SSRF.
+- Se aplican limites basicos de solicitudes por IP.
+- Se limpia almacenamiento temporal de trabajos finalizados.
+- No se soporta DRM, paywalls ni recursos privados autenticados ajenos.
+
+## Problemas comunes
+
+- `ffmpeg` o `ffprobe` no encontrados:
+  deja `FFMPEG_BIN=` y `FFPROBE_BIN=` vacios si ambas herramientas ya estan en PATH.
+- Error con cookies del navegador:
+  cierra Chrome/Edge completamente o usa `SOCIAL_COOKIES_FILE`.
+- Facebook/Instagram sin audio o sin analisis:
+  depende de si el enlace publico expone stream progresivo o requiere sesion.
+- Despliegue publico:
+  algunos hostings serverless no son buena opcion para `yt-dlp`; por eso este repo esta preparado para Docker.
+
+## Comandos utiles
+
+```powershell
+npm run dev
+npm run lint
 npm run build
-npm run start
 ```
 
-## Flujo de uso
+## Estado del proyecto
 
-1. Pega URL
-2. Clic en `Analizar`
-3. Revisa metadatos y opciones reales
-4. Selecciona modo/calidad
-5. Clic en `Descargar`
-6. Sigue barra de progreso
-7. El archivo se descarga desde el navegador
+Repositorio:
 
-## ¿Por qué puede salir error?
+[https://github.com/Jachll/Descarga-Free](https://github.com/Jachll/Descarga-Free)
 
-Casos comunes:
-
-1. `yt-dlp` no instalado o no disponible en PATH
-2. `ffmpeg` no instalado (especialmente para `mp3`)
-3. `FFMPEG_BIN`/`FFPROBE_BIN` con valor incorrecto (si usas PATH, no pongas `ffmpeg` literal en `FFMPEG_BIN`)
-4. URL inválida o no pública
-5. Recurso con DRM o autenticación privada
-6. Plataforma no compatible con versión actual de `yt-dlp`
-7. Contenido demasiado largo según `MAX_CONTENT_SECONDS`
-8. Rate limit alcanzado temporalmente
-
-## Facebook e Instagram
-
-Para mejorar compatibilidad en reels/posts que requieren sesion, usa tus cookies locales del navegador en `.env.local`:
-
-```env
-SOCIAL_COOKIES_FROM_BROWSER=chrome
-SOCIAL_COOKIES_PROFILE=Default
-```
-
-Luego reinicia `npm run dev`.
-
-Si el navegador bloquea la base de cookies, usa archivo `cookies.txt`:
-
-```env
-SOCIAL_COOKIES_FILE=C:\ruta\cookies.txt
-```
-
-## Seguridad y límites implementados
-
-- Validación de URL y protocolo
-- Bloqueo de hosts locales/privados (mitiga SSRF básico)
-- Rate limiting por IP
-- Timeout de procesamiento
-- Restricción de duración de contenido
-- Limpieza automática de temporales
-
-## Notas
-
-- El soporte no es universal; depende de compatibilidad real de `yt-dlp` y del origen del contenido.
-- Si vas a usar esta app en más equipos/usuarios, añade almacenamiento persistente de jobs y autenticación.
-
+La rama principal ya esta lista para seguir iterando y desplegar.
