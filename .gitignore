@@ -1,0 +1,11 @@
+﻿node_modules
+.next
+out
+*.log
+yarn.lock
+pnpm-lock.yaml
+.env
+.env.local
+cookies.txt
+.DS_Store
+temp-downloads
