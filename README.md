@@ -26,17 +26,6 @@ Descarga Free esta pensada para ejecutarse localmente o desplegarse como servici
 - `yt-dlp`
 - `ffmpeg` / `ffprobe`
 
-## Estructura
-
-- [app/page.tsx](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\page.tsx): pantalla principal.
-- [components/downloader-card.tsx](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\components\downloader-card.tsx): flujo de analisis, seleccion y descarga.
-- [app/api/analyze/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\analyze\route.ts): analiza la URL y obtiene metadatos.
-- [app/api/download/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\download\route.ts): crea el trabajo de descarga.
-- [app/api/progress/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\progress\route.ts): expone el estado del trabajo.
-- [app/api/file/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\file\route.ts): entrega el archivo final.
-- [app/api/health/route.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\app\api\health\route.ts): healthcheck para hosting.
-- [lib/yt-dlp.ts](C:\Users\USUARIO\Documents\CODEX\DESCARGAR VIDEOS\lib\yt-dlp.ts): integracion central con `yt-dlp`, `ffmpeg` y `ffprobe`.
-
 ## Requisitos
 
 - Node.js 20 o superior
